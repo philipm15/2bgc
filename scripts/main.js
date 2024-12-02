@@ -1,26 +1,24 @@
+const VELOCITY = 160;
+const SPRITE_ANIMATION_SPEED = 100; // change sprite every X ms
+const SPITE_ANIMATION_MOVING_FACTOR = 0.6; // increase the animation speed when moving
+
 const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
-const VELOCITY = 160;
-const WIDTH = 100;
-const HEIGHT = 100;
-const DEFAULT_GAP_SIZE = 40;
-const DEFAULT_GROW_SPEED = 100;
-const MINIMUM_GAP_SCALE = 0.2;
 let x = 100;
 let y = 300;
 let xVelocity = 0;
 let yVelocity = 0;
 let prevTotalRunningTime = 0;
 let deltaTime = 0;
-let gapData = {
-    currentGap: DEFAULT_GAP_SIZE,
-    growing: false,
-    growSpeed: DEFAULT_GROW_SPEED
+
+const animationData = {
+    currentAnimationSpeed: SPRITE_ANIMATION_SPEED,
+    orientation: 'right',
+    animationSprites: []
 }
 
 function gameLoop(totalRunningTime) {
-    deltaTime = totalRunningTime - prevTotalRunningTime; // Time in milliseconds between frames
-    deltaTime /= 1000; // Convert milliseconds to seconds for consistency in calculations
+    deltaTime = (totalRunningTime - prevTotalRunningTime) / 1000; // Time in milliseconds between frames
     prevTotalRunningTime = totalRunningTime; // Save the current state of "totalRunningTime", so at the next call of gameLoop (== next frame) to calculate deltaTime again for that next frame.
 
     update();  // Update certain values (e.g. positions)
@@ -33,58 +31,99 @@ function gameLoop(totalRunningTime) {
 function update() { // Updates the game's state on every frame
     x += xVelocity * deltaTime; // Adjust x and y position based on velocity and time elapsed since last frame ( == deltaTime)
     y += yVelocity * deltaTime;
-
-    if (gapData.growing) {
-        gapData.currentGap += gapData.growSpeed * deltaTime;
-
-        if (gapData.currentGap >= DEFAULT_GAP_SIZE) {
-            gapData.growing = false;
-        }
-    } else {
-        gapData.currentGap -= gapData.growSpeed * deltaTime;
-
-        if (gapData.currentGap <= Math.round(DEFAULT_GAP_SIZE * MINIMUM_GAP_SCALE)) {
-            gapData.growing = true;
-        }
-    }
 }
 
 function draw() {
-    const rectHeight = (HEIGHT / 2) - (gapData.currentGap / 2)
-    ctx.fillStyle = "#ff0000";
-    ctx.fillRect(x, y, WIDTH, rectHeight);
-    ctx.fillStyle = "#00ff00"
-    ctx.fillRect(x, y + rectHeight + gapData.currentGap, WIDTH, rectHeight);
+    const spriteIndex = Math.floor(Date.now() / animationData.currentAnimationSpeed) % animationData.animationSprites.length;
+    const sprite = animationData.animationSprites[spriteIndex];
+
+    ctx.save(); // Save the current context state
+    ctx.translate(x + sprite.width / 2, y + sprite.height / 2); // translate to the character position
+
+    // rotate the context based on the character's direction
+    switch (animationData.orientation) {
+        case 'up':
+            ctx.rotate(-Math.PI / 2);
+            break;
+        case 'down':
+            ctx.rotate(Math.PI / 2);
+            break;
+        case 'left':
+            ctx.rotate(Math.PI);
+            ctx.scale(1, -1); // flip vertically
+            break;
+        case 'right':
+            break;
+    }
+
+    ctx.drawImage(sprite, -sprite.width / 2, -sprite.height / 2);
+    ctx.restore(); // restore the context to its original state
 }
 
 function move(event) {
-    switch (event.key) {
-        case "d":
-            xVelocity = VELOCITY;
-            yVelocity = 0;
-            break;
-        case "a":
-            xVelocity = -VELOCITY;
-            yVelocity = 0;
-            break;
-        case "w":
-            xVelocity = 0;
-            yVelocity = -VELOCITY;
-            break;
-        case "s":
-            xVelocity = 0;
-            yVelocity = VELOCITY;
-            break;
+    // Normalize the key value to lowercase in order to check for arrows keys more easily
+    const key = event.key.toLowerCase();
+
+    if (['w', 'arrowup'].includes(key)) {
+        yVelocity = -VELOCITY;
+        xVelocity = 0;
+        animationData.orientation = 'up';
+        animationData.currentAnimationSpeed = SPRITE_ANIMATION_SPEED * SPITE_ANIMATION_MOVING_FACTOR;
+    }
+
+    if (['s', 'arrowdown'].includes(key)) {
+        yVelocity = VELOCITY;
+        xVelocity = 0;
+        animationData.orientation = 'down';
+        animationData.currentAnimationSpeed = SPRITE_ANIMATION_SPEED * SPITE_ANIMATION_MOVING_FACTOR;
+    }
+
+    if (['a', 'arrowleft'].includes(key)) {
+        xVelocity = -VELOCITY;
+        yVelocity = 0;
+        animationData.orientation = 'left';
+        animationData.currentAnimationSpeed = SPRITE_ANIMATION_SPEED * SPITE_ANIMATION_MOVING_FACTOR;
+    }
+
+    if (['d', 'arrowright'].includes(key)) {
+        xVelocity = VELOCITY;
+        yVelocity = 0;
+        animationData.orientation = 'right';
+        animationData.currentAnimationSpeed = SPRITE_ANIMATION_SPEED * SPITE_ANIMATION_MOVING_FACTOR;
     }
 }
 
 function stop() {
     xVelocity = 0;
     yVelocity = 0;
+    animationData.currentAnimationSpeed = SPRITE_ANIMATION_SPEED;
 }
 
-requestAnimationFrame(gameLoop);
-document.addEventListener("keydown", move);
-document.addEventListener("keyup", stop);
+function loadImages() {
+    const filePath = './sprites/PacMan{{i}}.png'
+    const promises = [];
 
+    for (let i = 0; i < 3; i++) {
+        const image = new Image();
+        image.src = filePath.replace('{{i}}', i.toString());
+        promises.push(new Promise((resolve, reject) => {
+            image.onload = () => resolve(image);
+            image.onerror = reject;
+        }));
+    }
 
+    return Promise.all(promises).then(images => {
+        animationData.animationSprites = images;
+    })
+}
+
+loadImages()
+    .then(() => {
+            requestAnimationFrame(gameLoop);
+            document.addEventListener("keydown", move);
+            document.addEventListener("keyup", stop);
+        }
+    ).catch(error => {
+        console.error('Error loading images', error);
+    }
+)

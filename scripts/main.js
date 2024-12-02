@@ -34,6 +34,7 @@ function update() { // Updates the game's state on every frame
 }
 
 function draw() {
+    // calculate the index by dividing the current time by the animation speed, modulu ensures that the index is always within the range of the animation sprites
     const spriteIndex = Math.floor(Date.now() / animationData.currentAnimationSpeed) % animationData.animationSprites.length;
     const sprite = animationData.animationSprites[spriteIndex];
 

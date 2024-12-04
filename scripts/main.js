@@ -1,5 +1,5 @@
 const VELOCITY = 160;
-const SPRITE_ANIMATION_SPEED = 100; // change sprite every X ms
+const SPRITE_ANIMATION_SPEED = 80; // change sprite every X ms
 const SPITE_ANIMATION_MOVING_FACTOR = 0.6; // increase the animation speed when moving
 
 const canvas = document.querySelector("#canvas");
@@ -104,7 +104,7 @@ function loadImages() {
     const filePath = './sprites/PacMan{{i}}.png'
     const promises = [];
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
         const image = new Image();
         image.src = filePath.replace('{{i}}', i.toString());
         promises.push(new Promise((resolve, reject) => {

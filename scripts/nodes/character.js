@@ -9,6 +9,7 @@ export class Character extends BaseNode {
     spriteAnimationMovingFactor = 0.6;
     sprites = [];
     rotation = 'right';
+    updateCallback = () => { };
 
     constructor(x, y, width, height, velocity = 160, animationSpeed = 80, currentAnimationSpeed = 80, spriteAnimationMovingFactor = 0.6, rotation = 'right') {
         super(x ?? 0, y ?? 0, width, height);
@@ -42,5 +43,7 @@ export class Character extends BaseNode {
     update(deltaTime) {
         this.x += this.xVelocity * (deltaTime ?? 0);
         this.y += this.yVelocity * (deltaTime ?? 0);
+
+        this.updateCallback();
     }
 }

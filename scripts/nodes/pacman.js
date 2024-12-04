@@ -33,7 +33,7 @@ export class PacmanNode extends Character {
         this.ctx.translate(this.x + sprite.width / 2, this.y + sprite.height / 2); // translate to the character position
 
         // rotate the context based on the character's direction
-        switch (this.orientation) {
+        switch (this.rotation) {
             case 'up':
                 this.ctx.rotate(-Math.PI / 2);
                 break;
@@ -64,28 +64,28 @@ export class PacmanNode extends Character {
         if (['w', 'arrowup'].includes(key)) {
             this.yVelocity = -this.velocity;
             this.xVelocity = 0;
-            this.orientation = 'up';
+            this.rotation = 'up';
             this.currentAnimationSpeed = this.animationSpeed * this.spriteAnimationMovingFactor;
         }
 
         if (['s', 'arrowdown'].includes(key)) {
             this.yVelocity = this.velocity;
             this.xVelocity = 0;
-            this.orientation = 'down';
+            this.rotation = 'down';
             this.currentAnimationSpeed = this.animationSpeed * this.spriteAnimationMovingFactor;
         }
 
         if (['a', 'arrowleft'].includes(key)) {
             this.xVelocity = -this.velocity;
             this.yVelocity = 0;
-            this.orientation = 'left';
+            this.rotation = 'left';
             this.currentAnimationSpeed = this.animationSpeed * this.spriteAnimationMovingFactor;
         }
 
         if (['d', 'arrowright'].includes(key)) {
             this.xVelocity = this.velocity
             this.yVelocity = 0;
-            this.orientation = 'right';
+            this.rotation = 'right';
             this.currentAnimationSpeed = this.animationSpeed * this.spriteAnimationMovingFactor;
         }
     }

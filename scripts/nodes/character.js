@@ -7,9 +7,16 @@ export class Character extends BaseNode {
     animationSpeed = 80;
     currentAnimationSpeed = 80;
     spriteAnimationMovingFactor = 0.6;
+    /**
+     * @type {Image[]}
+     */
     sprites = [];
+    /**
+     * @type {'right', 'left', 'up', 'down'}
+     */
     rotation = 'right';
-    updateCallback = () => { };
+    updateCallback = () => {
+    };
 
     constructor(x, y, width, height, velocity = 160, animationSpeed = 80, currentAnimationSpeed = 80, spriteAnimationMovingFactor = 0.6, rotation = 'right') {
         super(x ?? 0, y ?? 0, width, height);

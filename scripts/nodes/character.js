@@ -51,6 +51,18 @@ export class Character extends BaseNode {
         this.x += this.xVelocity * (deltaTime ?? 0);
         this.y += this.yVelocity * (deltaTime ?? 0);
 
+        if (this.x > this.canvas.width) {
+            this.x = 0 - this.width;
+        } else if (this.x + this.width < 0) {
+            this.x = this.canvas.width;
+        }
+
+        if (this.y > this.canvas.height) {
+            this.y = 0 - this.height;
+        } else if (this.y + this.height < 0) {
+            this.y = this.canvas.height;
+        }
+
         this.updateCallback();
     }
 }

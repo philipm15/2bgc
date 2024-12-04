@@ -2,7 +2,7 @@ import { Character } from "./character.js";
 
 export class PacmanNode extends Character {
     constructor(x, y) {
-        super(x, y, 50, 50);
+        super(x, y, 50, 50, 250);
         this._addEventListeners();
     }
 

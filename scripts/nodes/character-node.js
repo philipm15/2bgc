@@ -7,6 +7,7 @@ export class CharacterNode extends BaseNode {
     animationSpeed = 80;
     currentAnimationSpeed = 80;
     spriteAnimationMovingFactor = 0.6;
+    isColliding = false;
     /**
      * Array of images that will be used to draw the character
      * @type {Image[]}
@@ -33,18 +34,8 @@ export class CharacterNode extends BaseNode {
         this.rotation = rotation;
     }
 
-    getBoxBounds() {
-        return {
-            topLeft: this.x,
-            bottomLeft: this.y,
-            topRight: this.x + this.width,
-            bottomRight: this.y + this.height
-        }
-    }
-
     /**
-     * Called when data is received and should update the data buffer
-     * for each of the charts
+     * Load the images that will be used to draw the character
      *
      * @abstract
      * @return {Promise<void>}
@@ -64,7 +55,31 @@ export class CharacterNode extends BaseNode {
      * Called when the node should update its state
      * @abstract
      * @param deltaTime {number}
+     * @param collisionNodes {Area2DNode[]}
      */
-    update(deltaTime) {
+    update(deltaTime, collisionNodes) {
+    }
+
+    /**
+     * Check if the character is colliding with any area2D nodes
+     * @param {Area2DNode[]} area2DNodes
+     * @return boolean
+     */
+    checkCollision(area2DNodes) {
+        const characterBounds = this.getBoxBounds();
+        const area2DBounds = (area2DNodes || []).map(node => node.getBoxBounds());
+
+        return area2DBounds.some(area2DBound => {
+            return characterBounds.right >= area2DBound.left &&
+                characterBounds.left <= area2DBound.right &&
+                characterBounds.bottom >= area2DBound.top &&
+                characterBounds.top <= area2DBound.bottom;
+        });
+    }
+
+    stop() {
+        this.xVelocity = 0;
+        this.yVelocity = 0;
+        this.currentAnimationSpeed = this.animationSpeed;
     }
 }

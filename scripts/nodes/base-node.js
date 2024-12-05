@@ -14,10 +14,19 @@ export class BaseNode {
 
     get canvasBounds() {
         return {
-            topLeft: 0,
-            topRight: this.canvas.width,
-            bottomLeft: this.canvas.height,
-            bottomRight: this.canvas.width
+            left: 0,
+            right: this.canvas.width,
+            bottom: this.canvas.height,
+            top: 0
+        }
+    }
+
+    getBoxBounds() {
+        return {
+            left: this.x,
+            top: this.y,
+            right: this.x + this.width,
+            bottom: this.y + this.height
         }
     }
 }

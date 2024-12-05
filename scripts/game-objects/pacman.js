@@ -2,7 +2,7 @@ import { CharacterNode } from "../nodes/character-node.js";
 
 export class PacmanNode extends CharacterNode {
     constructor(x, y) {
-        super(x, y, 50, 50, 250);
+        super(x, y, 40, 40, 250);
         this._addEventListeners();
     }
 
@@ -52,9 +52,23 @@ export class PacmanNode extends CharacterNode {
         this.ctx.restore(); // restore the context to its original state
     }
 
-    update(deltaTime) {
-        this.x += this.xVelocity * (deltaTime ?? 0);
-        this.y += this.yVelocity * (deltaTime ?? 0);
+    update(deltaTime, collisionNodes) {
+        let newX = this.x + this.xVelocity * (deltaTime ?? 0);
+        let newY = this.y + this.yVelocity * (deltaTime ?? 0);
+
+        // Temporarily update position to check for collisions
+        this.x = newX;
+        this.y = newY;
+
+        if (this.checkCollision(collisionNodes)) {
+            // Revert position if collision detected
+            this.x -= this.xVelocity * (deltaTime ?? 0);
+            this.y -= this.yVelocity * (deltaTime ?? 0);
+            this.stop();
+            this.isColliding = true;
+        } else {
+            this.isColliding = false;
+        }
 
         this._screenWrap();
 
@@ -63,22 +77,22 @@ export class PacmanNode extends CharacterNode {
 
     _screenWrap() {
         const boxBounds = this.getBoxBounds();
-        if (boxBounds.topLeft > this.canvasBounds.topRight) {
-            this.x = 0 - this.width;
-        } else if (boxBounds.topRight < this.canvasBounds.topLeft) {
+        if (boxBounds.left > this.canvasBounds.right) {
+            this.x = this.canvasBounds.left - this.width;
+        } else if (boxBounds.right < this.canvasBounds.left) {
             this.x = this.canvas.width;
         }
 
-        if (boxBounds.bottomLeft > this.canvasBounds.bottomLeft) {
-            this.y = 0 - this.height;
-        } else if (boxBounds.bottomRight < 0) {
+        if (boxBounds.top > this.canvasBounds.bottom) {
+            this.y = this.canvasBounds.top - this.height;
+        } else if (boxBounds.bottom < this.canvasBounds.top) {
             this.y = this.canvas.height;
         }
     }
 
     _addEventListeners() {
         document.addEventListener("keydown", this._move.bind(this));
-        document.addEventListener("keyup", this._stop.bind(this));
+        document.addEventListener("keyup", this.stop.bind(this));
     }
 
     _move(event) {
@@ -112,11 +126,5 @@ export class PacmanNode extends CharacterNode {
             this.rotation = 'right';
             this.currentAnimationSpeed = this.animationSpeed * this.spriteAnimationMovingFactor;
         }
-    }
-
-    _stop() {
-        this.xVelocity = 0;
-        this.yVelocity = 0;
-        this.currentAnimationSpeed = this.animationSpeed;
     }
 }

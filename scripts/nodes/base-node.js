@@ -11,4 +11,13 @@ export class BaseNode {
     get ctx() {
         return this.canvas?.getContext('2d') ?? undefined;
     }
+
+    get canvasBounds() {
+        return {
+            topLeft: 0,
+            topRight: this.canvas.width,
+            bottomLeft: this.canvas.height,
+            bottomRight: this.canvas.width
+        }
+    }
 }

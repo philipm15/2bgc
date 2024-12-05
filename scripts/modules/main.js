@@ -1,6 +1,6 @@
-import { GameLoop } from "../nodes/game.js";
+import { GameLoop } from "../game-objects/game.js";
 import { CANVAS } from "./global.js";
-import { PacmanNode } from "../nodes/pacman.js";
+import { PacmanNode } from "../game-objects/pacman.js";
 
 const coordsElement = document.getElementById('coords');
 

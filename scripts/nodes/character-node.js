@@ -1,6 +1,6 @@
 import { BaseNode } from "./base-node.js";
 
-export class Character extends BaseNode {
+export class CharacterNode extends BaseNode {
     velocity = 160;
     xVelocity = 0;
     yVelocity = 0;
@@ -8,13 +8,19 @@ export class Character extends BaseNode {
     currentAnimationSpeed = 80;
     spriteAnimationMovingFactor = 0.6;
     /**
+     * Array of images that will be used to draw the character
      * @type {Image[]}
      */
     sprites = [];
     /**
+     * The current rotation of the character
      * @type {'right', 'left', 'up', 'down'}
      */
     rotation = 'right';
+    /**
+     * Callback function that will be called when the character is updated
+     * @type {() => void}
+     */
     updateCallback = () => {
     };
 
@@ -25,7 +31,15 @@ export class Character extends BaseNode {
         this.currentAnimationSpeed = currentAnimationSpeed;
         this.spriteAnimationMovingFactor = spriteAnimationMovingFactor;
         this.rotation = rotation;
-        this._addEventListeners();
+    }
+
+    getBoxBounds() {
+        return {
+            topLeft: this.x,
+            bottomLeft: this.y,
+            topRight: this.x + this.width,
+            bottomRight: this.y + this.height
+        }
     }
 
     /**
@@ -44,25 +58,13 @@ export class Character extends BaseNode {
      * @return void
      */
     draw() {
-
     }
 
+    /**
+     * Called when the node should update its state
+     * @abstract
+     * @param deltaTime {number}
+     */
     update(deltaTime) {
-        this.x += this.xVelocity * (deltaTime ?? 0);
-        this.y += this.yVelocity * (deltaTime ?? 0);
-
-        if (this.x > this.canvas.width) {
-            this.x = 0 - this.width;
-        } else if (this.x + this.width < 0) {
-            this.x = this.canvas.width;
-        }
-
-        if (this.y > this.canvas.height) {
-            this.y = 0 - this.height;
-        } else if (this.y + this.height < 0) {
-            this.y = this.canvas.height;
-        }
-
-        this.updateCallback();
     }
 }

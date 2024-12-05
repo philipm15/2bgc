@@ -1,6 +1,6 @@
-import { Character } from "./character.js";
+import { CharacterNode } from "../nodes/character-node.js";
 
-export class PacmanNode extends Character {
+export class PacmanNode extends CharacterNode {
     constructor(x, y) {
         super(x, y, 50, 50, 250);
         this._addEventListeners();
@@ -50,6 +50,30 @@ export class PacmanNode extends Character {
 
         this.ctx.drawImage(sprite, -sprite.width / 2, -sprite.height / 2);
         this.ctx.restore(); // restore the context to its original state
+    }
+
+    update(deltaTime) {
+        this.x += this.xVelocity * (deltaTime ?? 0);
+        this.y += this.yVelocity * (deltaTime ?? 0);
+
+        this._screenWrap();
+
+        this.updateCallback();
+    }
+
+    _screenWrap() {
+        const boxBounds = this.getBoxBounds();
+        if (boxBounds.topLeft > this.canvasBounds.topRight) {
+            this.x = 0 - this.width;
+        } else if (boxBounds.topRight < this.canvasBounds.topLeft) {
+            this.x = this.canvas.width;
+        }
+
+        if (boxBounds.bottomLeft > this.canvasBounds.bottomLeft) {
+            this.y = 0 - this.height;
+        } else if (boxBounds.bottomRight < 0) {
+            this.y = this.canvas.height;
+        }
     }
 
     _addEventListeners() {

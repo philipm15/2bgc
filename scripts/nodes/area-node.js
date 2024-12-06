@@ -1,6 +1,6 @@
-import { BaseNode } from "./base-node.js";
+import {CanvasItemNode} from "./canvas-item-node.js";
 
-export class Area2DNode extends BaseNode {
+export class AreaNode extends CanvasItemNode {
     /**
      * The sprite that will be used to draw the area2D node
      * @type {Image}
@@ -20,11 +20,7 @@ export class Area2DNode extends BaseNode {
     loadImage() {
     }
 
-    /**
-     * Called when the node should draw on the canvas
-     * @abstract
-     * @return void
-     */
     draw() {
+        this.ctx.drawImage(this.sprite, this.x, this.y, this.width, this.height);
     }
 }

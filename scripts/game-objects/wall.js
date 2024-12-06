@@ -1,12 +1,8 @@
-import { Area2DNode } from "../nodes/area2D-node.js";
+import { AreaNode } from "../nodes/area-node.js";
 
-export class Wall extends Area2DNode {
+export class Wall extends AreaNode {
     constructor(x, y, width, height) {
         super(x, y, width, height);
-    }
-
-    draw() {
-        this.ctx.drawImage(this.sprite, this.x, this.y, this.width, this.height);
     }
 
     loadImage() {

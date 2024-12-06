@@ -1,6 +1,7 @@
-import { BaseNode } from "./base-node.js";
+import {BaseNode} from "./base-node.js";
+import {CanvasItemNode} from "./canvas-item-node.js";
 
-export class CharacterNode extends BaseNode {
+export class CharacterNode extends CanvasItemNode {
     velocity = 160;
     xVelocity = 0;
     yVelocity = 0;
@@ -43,37 +44,54 @@ export class CharacterNode extends BaseNode {
     loadImages() {
     }
 
-    /**
-     * Called when the node should draw on the canvas
-     * @abstract
-     * @return void
-     */
     draw() {
-    }
+        // calculate the index by dividing the current time by the animation speed, modulo ensures that the index is always within the range of the animation sprites
+        if ((this.sprites || []).length === 0) return;
 
-    /**
-     * Called when the node should update its state
-     * @abstract
-     * @param deltaTime {number}
-     * @param collisionNodes {Area2DNode[]}
-     */
-    update(deltaTime, collisionNodes) {
+        let sprite
+        if (this.sprites.length === 1) {
+            sprite = this.sprites[0];
+        } else {
+            sprite = this.sprites[Math.floor(Date.now() / this.currentAnimationSpeed) % this.sprites.length];
+        }
+
+        this.ctx.save(); // Save the current context state
+        this.ctx.translate(this.x + sprite.width / 2, this.y + sprite.height / 2); // translate to the character position
+
+        // rotate the context based on the character's direction
+        switch (this.rotation) {
+            case 'up':
+                this.ctx.rotate(-Math.PI / 2);
+                break;
+            case 'down':
+                this.ctx.rotate(Math.PI / 2);
+                break;
+            case 'left':
+                this.ctx.rotate(Math.PI);
+                this.ctx.scale(1, -1); // flip vertically
+                break;
+            case 'right':
+                break;
+        }
+
+        this.ctx.drawImage(sprite, -sprite.width / 2, -sprite.height / 2);
+        this.ctx.restore(); // restore the context to its original state
     }
 
     /**
      * Check if the character is colliding with any area2D nodes
-     * @param {Area2DNode[]} area2DNodes
+     * @param {AreaNode[]} areaNodes
      * @return boolean
      */
-    checkCollision(area2DNodes) {
+    checkCollision(areaNodes) {
         const characterBounds = this.getBoxBounds();
-        const area2DBounds = (area2DNodes || []).map(node => node.getBoxBounds());
+        const area2DBounds = (areaNodes || []).map(node => node.getBoxBounds());
 
-        return area2DBounds.some(area2DBound => {
-            return characterBounds.right >= area2DBound.left &&
-                characterBounds.left <= area2DBound.right &&
-                characterBounds.bottom >= area2DBound.top &&
-                characterBounds.top <= area2DBound.bottom;
+        return area2DBounds.some(areaBound => {
+            return characterBounds.right >= areaBound.left &&
+                characterBounds.left <= areaBound.right &&
+                characterBounds.bottom >= areaBound.top &&
+                characterBounds.top <= areaBound.bottom;
         });
     }
 

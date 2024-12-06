@@ -1,6 +1,6 @@
 import { CharacterNode } from "../nodes/character-node.js";
 
-export class PacmanNode extends CharacterNode {
+export class Pacman extends CharacterNode {
     constructor(x, y) {
         super(x, y, 40, 40, 250);
         this._addEventListeners();
@@ -22,34 +22,6 @@ export class PacmanNode extends CharacterNode {
         return Promise.all(promises).then(images => {
             this.sprites = images;
         })
-    }
-
-    draw() {
-        // calculate the index by dividing the current time by the animation speed, modulo ensures that the index is always within the range of the animation sprites
-        const spriteIndex = Math.floor(Date.now() / this.currentAnimationSpeed) % this.sprites.length;
-        const sprite = this.sprites[spriteIndex];
-
-        this.ctx.save(); // Save the current context state
-        this.ctx.translate(this.x + sprite.width / 2, this.y + sprite.height / 2); // translate to the character position
-
-        // rotate the context based on the character's direction
-        switch (this.rotation) {
-            case 'up':
-                this.ctx.rotate(-Math.PI / 2);
-                break;
-            case 'down':
-                this.ctx.rotate(Math.PI / 2);
-                break;
-            case 'left':
-                this.ctx.rotate(Math.PI);
-                this.ctx.scale(1, -1); // flip vertically
-                break;
-            case 'right':
-                break;
-        }
-
-        this.ctx.drawImage(sprite, -sprite.width / 2, -sprite.height / 2);
-        this.ctx.restore(); // restore the context to its original state
     }
 
     update(deltaTime, collisionNodes) {

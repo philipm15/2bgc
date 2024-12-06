@@ -1,12 +1,12 @@
-import { GameLoop } from "../game-objects/game.js";
-import { CANVAS } from "./global.js";
-import { PacmanNode } from "../game-objects/pacman.js";
-import { Wall } from "../game-objects/wall.js";
+import {GameLoop} from "../game-objects/game.js";
+import {CANVAS} from "./global.js";
+import {Pacman} from "../game-objects/pacman.js";
+import {Wall} from "../game-objects/wall.js";
 
 const coordsElement = document.getElementById('coords');
 
 const gameLoop = new GameLoop(CANVAS);
-const pacman = new PacmanNode(100, 300);
+const pacman = new Pacman(200, 100);
 
 pacman.updateCallback = () => {
     coordsElement.innerText = `${Math.round(pacman.x)}, ${Math.round(pacman.y)}`;
@@ -14,13 +14,25 @@ pacman.updateCallback = () => {
 gameLoop.addCharacters([pacman]);
 
 // create walls around the canvas
-const walls = CANVAS.width / 50;
-for (let i = 0; i < walls; i++) {
-    for(let j = 0; j < walls; j++) {
-        if ((i === 0 || i === walls - 1 || j === 0 || j === walls - 1) && j !== 1) {
-            const wall = new Wall(i * 50, j * 50, 50, 50);
+const wallMap = [
+    [1, 1, 1, 0, 1, 1, 0, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+    [1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
+    [1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
+    [1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
+    [1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
+    [0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 0, 1, 1, 0, 1, 1, 1],
+]
+
+wallMap.forEach((row, rowIndex) => {
+    row.forEach((cell, colIndex) => {
+        if (cell === 1) {
+            const wall = new Wall(colIndex * 50, rowIndex * 50, Math.round(CANVAS.width / row.length), CANVAS.width / wallMap.length);
             gameLoop.addArea2DNodes([wall]);
         }
-    }
-}
+    })
+})
 gameLoop.start();

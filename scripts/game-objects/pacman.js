@@ -1,4 +1,5 @@
-import { CharacterNode } from "../nodes/character-node.js";
+import {CharacterNode} from "../nodes/character-node.js";
+import {loadImageByPath} from "../lib/image.js";
 
 export class Pacman extends CharacterNode {
     constructor(x, y) {
@@ -11,12 +12,7 @@ export class Pacman extends CharacterNode {
         const promises = [];
 
         for (let i = 0; i < 4; i++) {
-            const image = new Image();
-            image.src = filePath.replace('{{i}}', i.toString());
-            promises.push(new Promise((resolve, reject) => {
-                image.onload = () => resolve(image);
-                image.onerror = reject;
-            }));
+            promises.push(loadImageByPath(filePath.replace('{{i}}', i.toString())));
         }
 
         return Promise.all(promises).then(images => {

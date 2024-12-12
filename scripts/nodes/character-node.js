@@ -1,6 +1,4 @@
-import {BaseNode} from "./base-node.js";
 import {CanvasItemNode} from "./canvas-item-node.js";
-import {checkCollision} from "../lib/collision.js";
 
 export class CharacterNode extends CanvasItemNode {
     velocity = 160;

@@ -1,5 +1,6 @@
 import {BaseNode} from "./base-node.js";
 import {CanvasItemNode} from "./canvas-item-node.js";
+import {checkCollision} from "../lib/collision.js";
 
 export class CharacterNode extends CanvasItemNode {
     velocity = 160;
@@ -8,7 +9,7 @@ export class CharacterNode extends CanvasItemNode {
     animationSpeed = 80;
     currentAnimationSpeed = 80;
     spriteAnimationMovingFactor = 0.6;
-    isColliding = false;
+
     /**
      * Array of images that will be used to draw the character
      * @type {Image[]}
@@ -56,7 +57,7 @@ export class CharacterNode extends CanvasItemNode {
         }
 
         this.ctx.save(); // Save the current context state
-        this.ctx.translate(this.x + sprite.width / 2, this.y + sprite.height / 2); // translate to the character position
+        this.ctx.translate(this.x + this.width / 2, this.y + this.height / 2); // translate to the character position
 
         // rotate the context based on the character's direction
         switch (this.rotation) {
@@ -74,25 +75,8 @@ export class CharacterNode extends CanvasItemNode {
                 break;
         }
 
-        this.ctx.drawImage(sprite, -sprite.width / 2, -sprite.height / 2);
+        this.ctx.drawImage(sprite, -this.width / 2, -this.height / 2, this.width, this.height);
         this.ctx.restore(); // restore the context to its original state
-    }
-
-    /**
-     * Check if the character is colliding with any area2D nodes
-     * @param {AreaNode[]} areaNodes
-     * @return boolean
-     */
-    checkCollision(areaNodes) {
-        const characterBounds = this.getBoxBounds();
-        const area2DBounds = (areaNodes || []).map(node => node.getBoxBounds());
-
-        return area2DBounds.some(areaBound => {
-            return characterBounds.right >= areaBound.left &&
-                characterBounds.left <= areaBound.right &&
-                characterBounds.bottom >= areaBound.top &&
-                characterBounds.top <= areaBound.bottom;
-        });
     }
 
     stop() {

@@ -2,8 +2,11 @@ import {CharacterNode} from "../nodes/character-node.js";
 import {loadImageByPath} from "../lib/image.js";
 
 export class Pacman extends CharacterNode {
+    prevX;
+    prevY;
+
     constructor(x, y) {
-        super(x, y, 40, 40, 250);
+        super(x, y, 45, 45, 45 * 5);
         this._addEventListeners();
     }
 
@@ -20,7 +23,10 @@ export class Pacman extends CharacterNode {
         })
     }
 
-    update(deltaTime, collisionNodes) {
+    update(deltaTime) {
+        this.prevX = this.x;
+        this.prevY = this.y;
+
         let newX = this.x + this.xVelocity * (deltaTime ?? 0);
         let newY = this.y + this.yVelocity * (deltaTime ?? 0);
 
@@ -28,19 +34,17 @@ export class Pacman extends CharacterNode {
         this.x = newX;
         this.y = newY;
 
-        if (this.checkCollision(collisionNodes)) {
-            // Revert position if collision detected
-            this.x -= this.xVelocity * (deltaTime ?? 0);
-            this.y -= this.yVelocity * (deltaTime ?? 0);
-            this.stop();
-            this.isColliding = true;
-        } else {
-            this.isColliding = false;
-        }
-
         this._screenWrap();
 
         this.updateCallback();
+    }
+
+    onCollision(node) {
+        if(this.prevX && this.prevY) {
+            this.x = this.prevX;
+            this.y = this.prevY;
+            this.stop();
+        }
     }
 
     _screenWrap() {

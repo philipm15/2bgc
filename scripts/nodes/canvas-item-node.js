@@ -17,8 +17,16 @@ export class CanvasItemNode extends BaseNode {
      * Called when the node should update its state
      * @abstract
      * @param deltaTime {number}
-     * @param collisionNodes {AreaNode[]}
+     // * @param collisionNodes {AreaNode[]}
      */
-    update(deltaTime, collisionNodes) {
+    update(deltaTime) {
+    }
+
+    /**
+     * Called when the node should react to a collision
+     * @abstract
+     * @param node {CanvasItemNode} node it collided with
+     */
+    onCollision(node) {
     }
 }

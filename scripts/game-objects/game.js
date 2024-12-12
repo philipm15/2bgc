@@ -1,3 +1,5 @@
+import {checkCollision} from "../lib/collision.js";
+
 export class GameLoop {
     canvas;
     deltaTime = 0;
@@ -51,9 +53,25 @@ export class GameLoop {
         this.deltaTime = (totalRunningTime - this.prevTotalRunningTime) / 1000;
         this.prevTotalRunningTime = totalRunningTime;
 
-        this.characterNodes.forEach(character => {
-            character.update(this.deltaTime, this.area2DNodes);
+        const collidableNodes = [...this.characterNodes, ...this.area2DNodes];
+
+        for (let i = 0; i < collidableNodes.length; i++) {
+            for (let j = i + 1; j < collidableNodes.length; j++) {
+                const nodeA = collidableNodes[i];
+                const nodeB = collidableNodes[j];
+
+                if (checkCollision(nodeA, nodeB)) {
+                    // Handle collision
+                    nodeA.onCollision(nodeB);
+                    nodeB.onCollision(nodeA);
+                }
+            }
+        }
+
+        collidableNodes.forEach(node => {
+            node.update(this.deltaTime);
         });
+
         this.clearRect();
         [...this.area2DNodes, ...this.characterNodes].forEach(node => {
             node.draw();

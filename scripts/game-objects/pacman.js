@@ -27,12 +27,8 @@ export class Pacman extends CharacterNode {
         this.prevX = this.x;
         this.prevY = this.y;
 
-        let newX = this.x + this.xVelocity * (deltaTime ?? 0);
-        let newY = this.y + this.yVelocity * (deltaTime ?? 0);
-
-        // Temporarily update position to check for collisions
-        this.x = newX;
-        this.y = newY;
+        this.x = this.x + this.xVelocity * (deltaTime ?? 0);
+        this.y = this.y + this.yVelocity * (deltaTime ?? 0);
 
         this._screenWrap();
 

@@ -6,7 +6,7 @@ export class Pacman extends CharacterNode {
     prevY;
 
     constructor(x, y) {
-        super(x, y, 45, 45, 45 * 5);
+        super(x, y, 40, 40, 40 * 5);
         this._addEventListeners();
     }
 

@@ -23,4 +23,10 @@ export class AreaNode extends CanvasItemNode {
     draw() {
         this.ctx.drawImage(this.sprite, this.x, this.y, this.width, this.height);
     }
+
+    onCollision(node) {
+    }
+
+    update(deltaTime) {
+    }
 }

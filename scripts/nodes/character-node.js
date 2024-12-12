@@ -82,4 +82,10 @@ export class CharacterNode extends CanvasItemNode {
         this.yVelocity = 0;
         this.currentAnimationSpeed = this.animationSpeed;
     }
+
+    onCollision(node) {
+    }
+
+    update(deltaTime) {
+    }
 }

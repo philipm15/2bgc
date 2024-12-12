@@ -20,10 +20,12 @@ export class GameLoop {
         if (this.frameRequestId) {
             window.cancelAnimationFrame(this.frameRequestId);
         }
+
         const promises = [
             ...this.characterNodes.map(character => character.loadImages()),
             ...this.area2DNodes.map(area2DNode => area2DNode.loadImage())
         ];
+
         Promise.all(promises)
             .then(() => {
                 this.frameRequestId = requestAnimationFrame(this._initGameLoop.bind(this));

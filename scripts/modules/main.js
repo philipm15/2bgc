@@ -3,7 +3,7 @@ import {CANVAS} from "./global.js";
 import {Pacman} from "../game-objects/pacman.js";
 import {Wall} from "../game-objects/wall.js";
 
-// create walls around the canvas
+// create walls around the canvas 1 = wall, 0 = empty space
 const wallMap = [
     [1, 1, 1, 0, 1, 1, 0, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],

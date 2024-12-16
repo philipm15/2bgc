@@ -1,6 +1,8 @@
 import {BaseNode} from "./base-node.js";
 
 export class CanvasItemNode extends BaseNode {
+    onCollisionCallbacks = [];
+
     constructor(x, y, width, height) {
         super(x, y, width, height);
     }
@@ -24,9 +26,16 @@ export class CanvasItemNode extends BaseNode {
 
     /**
      * Called when the node should react to a collision
-     * @abstract
      * @param node {CanvasItemNode} node it collided with
      */
     onCollision(node) {
+        this.onCollisionCallbacks.forEach(callback => callback(node))
+    }
+
+    /**
+     * @param collisionCallback
+     */
+    addOnCollisionCallback(collisionCallback) {
+        this.onCollisionCallbacks.push(collisionCallback);
     }
 }

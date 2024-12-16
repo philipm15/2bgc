@@ -35,7 +35,7 @@ export class Pacman extends CharacterNode {
         this.updateCallback();
     }
 
-    onCollision(node) {
+    _resetToLastFrame() {
         if(this.prevX && this.prevY) {
             this.x = this.prevX;
             this.y = this.prevY;

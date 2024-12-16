@@ -1,5 +1,6 @@
 export class BaseNode {
     canvas;
+    onDestroyed = () => {};
 
     constructor(x, y, width, height) {
         this.x = x ?? 0;
@@ -28,5 +29,13 @@ export class BaseNode {
             right: this.x + this.width,
             bottom: this.y + this.height
         }
+    }
+
+    /**
+     * Function will be set by parent game class
+     * @access protected
+     */
+    destroy() {
+        this.onDestroyed();
     }
 }

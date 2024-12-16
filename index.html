@@ -1,18 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Hello, world!</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="" />
-  <link rel="stylesheet" type="text/css" href="./css/style.css" />
-  <link rel="icon" href="favicon.png">
+    <meta charset="UTF-8"/>
+    <title>Hello, world!</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="description" content=""/>
+    <link rel="stylesheet" type="text/css" href="./css/style.css"/>
+    <link rel="icon" href="favicon.png">
+
+    <style>
+        .game-info-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+            align-items: center;
+        }
+    </style>
 </head>
 <body>
-  <script type="module" src="scripts/modules/main.js"></script>
-  <div class="container">
-    <canvas class="game-canvas" id="canvas" width="500" height="500"></canvas>
-    <span id="coords"></span>
-  </div>
+    <script type="module" src="scripts/modules/main.js"></script>
+
+    <div class="container">
+        <canvas class="game-canvas" id="canvas" width="500" height="500"></canvas>
+        <div class="game-info-container">
+            <span id="coords"></span>
+            <span id="score">0</span>
+        </div>
+    </div>
 </body>
 </html>

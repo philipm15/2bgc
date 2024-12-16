@@ -16,6 +16,10 @@ export class GameLoop {
         return this.canvas?.getContext('2d') ?? undefined;
     }
 
+    get allNodes() {
+        return [...this.characterNodes, ...this.area2DNodes];
+    }
+
     start() {
         if (this.frameRequestId) {
             window.cancelAnimationFrame(this.frameRequestId);
@@ -38,8 +42,10 @@ export class GameLoop {
     addCharacters(characters) {
         characters.forEach(character => {
             character.canvas = this.canvas;
-            // character.update = character.update.bind(character);
-            // character.draw = character.draw.bind(character);
+            character.destroy = () => {
+                character.destroy();
+                this.characterNodes.filter(node => node !== character);
+            };
         })
         this.characterNodes.push(...characters);
     }
@@ -47,6 +53,11 @@ export class GameLoop {
     addArea2DNodes(area2DNodes) {
         area2DNodes.forEach(area2DNode => {
             area2DNode.canvas = this.canvas;
+            const originalDestroy = area2DNode.destroy;
+            area2DNode.destroy = () => {
+                originalDestroy.call(area2DNode);
+                this.area2DNodes = this.area2DNodes.filter(node => node !== area2DNode);
+            }
         });
         this.area2DNodes.push(...area2DNodes);
     }

@@ -5,9 +5,9 @@ import {Wall} from "../game-objects/wall.js";
 import {Candy} from "../game-objects/candy.js";
 
 // create walls around the canvas 1 = wall, 0 = empty space
-const map = [
+const MAP = [
     [1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 3, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 0, 1, 1, 1, 1, 0, 1, 1],
     [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
     [1, 1, 0, 1, 1, 1, 1, 0, 1, 1],
@@ -21,6 +21,14 @@ const map = [
 let gameLoopInstance;
 
 function setupGame() {
+    // randomize the position of the candies
+    const map = MAP.map(row => row.map(cell => {
+        if (cell === 1) {
+            return 1;
+        }
+        return Math.random() > 0.7 ? 3 : 0;
+    }));
+
     gameLoopInstance = undefined;
     const coordsElement = document.getElementById('coords');
     const scoreElement = document.getElementById('score');

@@ -1,6 +1,10 @@
 import {checkCollision} from "../lib/collision.js";
 
 export class GameLoop {
+    /**
+     * The canvas element
+     * @type {HTMLCanvasElement}
+     */
     canvas;
     deltaTime = 0;
     prevTotalRunningTime = 0;
@@ -12,6 +16,10 @@ export class GameLoop {
         this.canvas = canvas;
     }
 
+    /**
+     *
+     * @returns {CanvasRenderingContext2D}
+     */
     get ctx() {
         return this.canvas?.getContext('2d') ?? undefined;
     }
@@ -25,6 +33,8 @@ export class GameLoop {
             window.cancelAnimationFrame(this.frameRequestId);
         }
 
+        this._drawLoadingScreen();
+
         const promises = [
             ...this.characterNodes.map(character => character.loadImages()),
             ...this.area2DNodes.map(area2DNode => area2DNode.loadImage())
@@ -32,7 +42,10 @@ export class GameLoop {
 
         Promise.all(promises)
             .then(() => {
-                this.frameRequestId = requestAnimationFrame(this._initGameLoop.bind(this));
+                setTimeout(() => {
+                    this.clearRect();
+                    this.frameRequestId = requestAnimationFrame(this._initGameLoop.bind(this));
+                }, 1000);
             })
             .catch(error => {
                 console.error('Error loading images', error);
@@ -91,6 +104,17 @@ export class GameLoop {
         });
 
         requestAnimationFrame(this._initGameLoop.bind(this));
+    }
+
+    _drawLoadingScreen() {
+        this.ctx.save();
+        this.ctx.fillStyle = 'black';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillStyle = 'yellow';
+        this.ctx.textAlign = 'center';
+        this.ctx.font = '48px Monospace';
+        this.ctx.fillText('SnackMan', this.canvas.width / 2, this.canvas.height / 2);
+        this.ctx.restore();
     }
 
     clearRect() {

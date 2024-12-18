@@ -11,6 +11,7 @@ export class GameLoop {
     characterNodes = [];
     area2DNodes = [];
     frameRequestId = undefined;
+    stopGame = false;
 
     constructor(canvas) {
         this.canvas = canvas;
@@ -33,23 +34,32 @@ export class GameLoop {
             window.cancelAnimationFrame(this.frameRequestId);
         }
 
-        this._drawLoadingScreen();
+        this.stopGame = false;
 
         const promises = [
             ...this.characterNodes.map(character => character.loadImages()),
-            ...this.area2DNodes.map(area2DNode => area2DNode.loadImage())
+            ...this.area2DNodes.map(area2DNode => area2DNode.loadImages())
         ];
 
         Promise.all(promises)
             .then(() => {
-                setTimeout(() => {
-                    this.clearRect();
-                    this.frameRequestId = requestAnimationFrame(this._initGameLoop.bind(this));
-                }, 1000);
+                this.clearRect();
+                this.frameRequestId = requestAnimationFrame(this._initGameLoop.bind(this));
             })
             .catch(error => {
                 console.error('Error loading images', error);
             });
+    }
+
+    stop() {
+        console.log(this.frameRequestId)
+        delete this;
+        if (this.frameRequestId) {
+            this.stopGame = true;
+            window.cancelAnimationFrame(this.frameRequestId);
+            this.frameRequestId = null;
+        }
+        this.clearRect();
     }
 
     addCharacters(characters) {
@@ -63,19 +73,23 @@ export class GameLoop {
         this.characterNodes.push(...characters);
     }
 
-    addArea2DNodes(area2DNodes) {
-        area2DNodes.forEach(area2DNode => {
-            area2DNode.canvas = this.canvas;
-            const originalDestroy = area2DNode.destroy;
-            area2DNode.destroy = () => {
-                originalDestroy.call(area2DNode);
-                this.area2DNodes = this.area2DNodes.filter(node => node !== area2DNode);
+    addAreaNodes(areaNodes) {
+        areaNodes.forEach(areaNode => {
+            areaNode.canvas = this.canvas;
+            const originalDestroy = areaNode.destroy;
+            areaNode.destroy = () => {
+                originalDestroy.call(areaNode);
+                this.area2DNodes = this.area2DNodes.filter(node => node !== areaNode);
             }
         });
-        this.area2DNodes.push(...area2DNodes);
+        this.area2DNodes.push(...areaNodes);
     }
 
     _initGameLoop(totalRunningTime) {
+        if (this.stopGame) {
+            this.drawWinningScreen();
+            return
+        }
         this.deltaTime = (totalRunningTime - this.prevTotalRunningTime) / 1000;
         this.prevTotalRunningTime = totalRunningTime;
 
@@ -103,10 +117,11 @@ export class GameLoop {
             node.draw();
         });
 
-        requestAnimationFrame(this._initGameLoop.bind(this));
+        this.frameRequestId = requestAnimationFrame(this._initGameLoop.bind(this));
     }
 
-    _drawLoadingScreen() {
+    drawLoadingScreen() {
+        this.clearRect();
         this.ctx.save();
         this.ctx.fillStyle = 'black';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -114,6 +129,18 @@ export class GameLoop {
         this.ctx.textAlign = 'center';
         this.ctx.font = '48px Monospace';
         this.ctx.fillText('SnackMan', this.canvas.width / 2, this.canvas.height / 2);
+        this.ctx.restore();
+    }
+
+    drawWinningScreen() {
+        this.clearRect();
+        this.ctx.save();
+        this.ctx.fillStyle = 'black';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillStyle = 'yellow';
+        this.ctx.textAlign = 'center';
+        this.ctx.font = '48px Monospace';
+        this.ctx.fillText('You won!', this.canvas.width / 2, this.canvas.height / 2);
         this.ctx.restore();
     }
 

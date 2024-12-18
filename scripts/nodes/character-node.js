@@ -1,18 +1,12 @@
 import {CanvasItemNode} from "./canvas-item-node.js";
+import {AnimatedSpriteNode} from "./animated-sprite-node.js";
 
 export class CharacterNode extends CanvasItemNode {
     velocity = 160;
     xVelocity = 0;
     yVelocity = 0;
-    animationSpeed = 80;
-    currentAnimationSpeed = 80;
-    spriteAnimationMovingFactor = 0.6;
+    animatedSpriteNode = new AnimatedSpriteNode();
 
-    /**
-     * Array of images that will be used to draw the character
-     * @type {Image[]}
-     */
-    sprites = [];
     /**
      * The current rotation of the character
      * @type {'right', 'left', 'up', 'down'}
@@ -25,33 +19,40 @@ export class CharacterNode extends CanvasItemNode {
     updateCallback = () => {
     };
 
-    constructor(x, y, width, height, velocity = 160, animationSpeed = 80, currentAnimationSpeed = 80, spriteAnimationMovingFactor = 0.6, rotation = 'right') {
+    constructor(x, y, width, height, velocity = 160, rotation = 'right') {
         super(x ?? 0, y ?? 0, width, height);
         this.velocity = velocity;
-        this.animationSpeed = animationSpeed;
-        this.currentAnimationSpeed = currentAnimationSpeed;
-        this.spriteAnimationMovingFactor = spriteAnimationMovingFactor;
         this.rotation = rotation;
+    }
+
+    /**
+     * Array of images that will be used to draw the character
+     * @return {Image[]}
+     */
+    get sprites() {
+        return this.animatedSpriteNode.sprites ?? [];
     }
 
     /**
      * Load the images that will be used to draw the character
      *
-     * @abstract
      * @return {Promise<void>}
      */
     loadImages() {
+        return this.animatedSpriteNode.loadImages();
     }
 
     draw() {
+        const sprites = this.sprites;
         // calculate the index by dividing the current time by the animation speed, modulo ensures that the index is always within the range of the animation sprites
-        if ((this.sprites || []).length === 0) return;
+        if ((sprites || []).length === 0) return;
 
-        let sprite
-        if (this.sprites.length === 1) {
-            sprite = this.sprites[0];
+        const currentAnimationSpeed = this.animatedSpriteNode.currentAnimationSpeed;
+        let sprite;
+        if (sprites.length === 1) {
+            sprite = sprites[0];
         } else {
-            sprite = this.sprites[Math.floor(Date.now() / this.currentAnimationSpeed) % this.sprites.length];
+            sprite = sprites[Math.floor(Date.now() / currentAnimationSpeed) % sprites.length];
         }
 
         this.ctx.save(); // Save the current context state
@@ -80,7 +81,7 @@ export class CharacterNode extends CanvasItemNode {
     stop() {
         this.xVelocity = 0;
         this.yVelocity = 0;
-        this.currentAnimationSpeed = this.animationSpeed;
+        this.animatedSpriteNode.resetAnimationSpeed();
     }
 
     onCollision(node) {

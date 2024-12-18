@@ -1,11 +1,8 @@
 import {CanvasItemNode} from "./canvas-item-node.js";
+import {AnimatedSpriteNode} from "./animated-sprite-node.js";
 
 export class AreaNode extends CanvasItemNode {
-    /**
-     * The sprite that will be used to draw the area2D node
-     * @type {Image}
-     */
-    sprite;
+    animatedSpriteNode = new AnimatedSpriteNode();
 
     constructor(x, y, width, height) {
         super(x, y, width, height);
@@ -13,15 +10,14 @@ export class AreaNode extends CanvasItemNode {
 
     /**
      * Load the image that will be used to draw the area2D node
-     *
-     * @abstract
      * @return {Promise<void>}
      */
-    loadImage() {
+    loadImages() {
+        return this.animatedSpriteNode.loadImages();
     }
 
     draw() {
-        this.ctx.drawImage(this.sprite, this.x, this.y, this.width, this.height);
+        this.ctx.drawImage(this.animatedSpriteNode.sprites[0], this.x, this.y, this.width, this.height);
     }
 
     update(deltaTime) {

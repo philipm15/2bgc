@@ -1,5 +1,6 @@
 import {CharacterNode} from "../nodes/character-node.js";
-import {loadImageByPath} from "../lib/image.js";
+import {Wall} from "./wall.js";
+import {Candy} from "./candy.js";
 
 export class Pacman extends CharacterNode {
     prevX;
@@ -7,20 +8,12 @@ export class Pacman extends CharacterNode {
 
     constructor(x, y) {
         super(x, y, 40, 40, 40 * 5);
-        this._addEventListeners();
-    }
-
-    loadImages() {
-        const filePath = './sprites/PacMan{{i}}.png'
-        const promises = [];
-
-        for (let i = 0; i < 4; i++) {
-            promises.push(loadImageByPath(filePath.replace('{{i}}', i.toString())));
-        }
-
-        return Promise.all(promises).then(images => {
-            this.sprites = images;
+        this.animatedSpriteNode.setConfig({
+            spritePath: 'sprites/frog-{{i}}.png',
+            numberOfSprites: 2,
+            animationSpeed: 300,
         })
+        this._addEventListeners();
     }
 
     update(deltaTime) {
@@ -33,6 +26,16 @@ export class Pacman extends CharacterNode {
         this._screenWrap();
 
         this.updateCallback();
+    }
+
+    onCollision(node) {
+        if(node instanceof Wall) {
+            this._resetToLastFrame();
+        }
+
+        if(node instanceof Candy) {
+            node.destroy();
+        }
     }
 
     _resetToLastFrame() {
@@ -71,28 +74,28 @@ export class Pacman extends CharacterNode {
             this.yVelocity = -this.velocity;
             this.xVelocity = 0;
             this.rotation = 'up';
-            this.currentAnimationSpeed = this.animationSpeed * this.spriteAnimationMovingFactor;
+            this.animatedSpriteNode.setAnimationMovingSpeed();
         }
 
         if (['s', 'arrowdown'].includes(key)) {
             this.yVelocity = this.velocity;
             this.xVelocity = 0;
             this.rotation = 'down';
-            this.currentAnimationSpeed = this.animationSpeed * this.spriteAnimationMovingFactor;
+            this.animatedSpriteNode.setAnimationMovingSpeed();
         }
 
         if (['a', 'arrowleft'].includes(key)) {
             this.xVelocity = -this.velocity;
             this.yVelocity = 0;
             this.rotation = 'left';
-            this.currentAnimationSpeed = this.animationSpeed * this.spriteAnimationMovingFactor;
+            this.animatedSpriteNode.setAnimationMovingSpeed();
         }
 
         if (['d', 'arrowright'].includes(key)) {
             this.xVelocity = this.velocity
             this.yVelocity = 0;
             this.rotation = 'right';
-            this.currentAnimationSpeed = this.animationSpeed * this.spriteAnimationMovingFactor;
+            this.animatedSpriteNode.setAnimationMovingSpeed();
         }
     }
 }
